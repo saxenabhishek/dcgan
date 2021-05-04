@@ -1,22 +1,17 @@
 r"""
 generator
 """
-import torch
 import torch.nn as nn
 
 
 class Generator(nn.Module):
     def __init__(
-        self, z, filter,
+        self, z, filter, c
     ):
         super(Generator, self).__init__()
         self.first = nn.Sequential(nn.Linear(z, 7 * 7 * z),)
         self.main = nn.Sequential(
-            self.block(z, filter * 16),
-            self.block(filter * 16, filter * 8, last=True),
-            # self.block(filter * 8, filter * 4, last=True),
-            # self.block(filter * 4, filter * 2),
-            # self.block(filter * 2, filter * 1, last=True),
+            self.block(z, filter * 16), self.block(filter * 16, c, last=True)
         )
 
     def block(self, i, o, last=False):
