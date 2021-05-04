@@ -1,3 +1,34 @@
 r"""
 generator
 """
+import torch
+import torch.nn as nn
+
+
+class Generator(nn.Module):
+    def __init__(
+        self, z, filter,
+    ):
+        super(Generator, self).__init__()
+        self.first = nn.Sequential(nn.Linear(z, 7 * 7 * z),)
+        self.main = nn.Sequential(
+            self.block(z, filter * 16),
+            self.block(filter * 16, filter * 8, last=True),
+            # self.block(filter * 8, filter * 4, last=True),
+            # self.block(filter * 4, filter * 2),
+            # self.block(filter * 2, filter * 1, last=True),
+        )
+
+    def block(self, i, o, last=False):
+        l = []
+        l.append(nn.ConvTranspose2d(i, o, 4, 2, 1, bias=False))
+        if not last:
+            l.append(nn.BatchNorm2d(o))
+        l.append(nn.ReLU(True) if not last else nn.Tanh())
+        return nn.Sequential(*l)
+
+    def forward(self, input):
+        bs = input.shape[0]
+        x = self.first(input)
+        x = x.reshape(bs, -1, 7, 7)
+        return self.main(x)
