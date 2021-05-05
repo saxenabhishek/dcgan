@@ -2,10 +2,8 @@ r"""
 binnary cross entropy loss functions
 """
 
-from ctypes import set_last_error
 import torch
 from torch import nn
-from torch.autograd import backward
 
 
 class BCE:

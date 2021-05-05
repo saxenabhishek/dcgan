@@ -1,7 +1,7 @@
-import code.models.disc as D
-import code.models.gen as G
-from code.trainer import trainer
-import code.utils as utl
+import dcgan.models.disc as D
+import dcgan.models.gen as G
+from dcgan.trainer import trainer
+import dcgan.utils as utl
 
 import matplotlib.pyplot as plt
 import numpy as np

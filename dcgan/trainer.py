@@ -2,10 +2,10 @@ r"""
 trainer
 """
 
-import code.models.disc as D
-import code.models.gen as G
-from code.loss.bce import BCE
-import code.utils as utl
+import dcgan.models.disc as D
+import dcgan.models.gen as G
+from dcgan.loss.bce import BCE
+import dcgan.utils as utl
 
 import torch
 import torch.nn as nn
