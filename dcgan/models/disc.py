@@ -13,8 +13,8 @@ class Discriminator(nn.Module):
         self.main = nn.Sequential(self.block(c, filter * 2, first=True), self.block(filter * 2, filter * 4),)
         self.last = nn.Sequential(
             nn.Conv2d(filter * 4, filter * 8, 4, 2, 1, bias=False),
-            nn.Flatten(),
-            nn.Linear(filter * 8 * 7 * 7, 1),
+            # nn.Flatten(),
+            # nn.Linear(filter * 8 * 7 * 7, 1),
             nn.Sigmoid(),
         )
 
