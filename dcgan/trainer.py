@@ -84,8 +84,8 @@ class trainer:
             {
                 "gen": self.gen.state_dict(),
                 "disc": self.disc.state_dict(),
-                "optimD": self.discopt.state_dict(),
-                "optimD": self.genopt.state_dict(),
+                "optimD": self.optimD.state_dict(),
+                "optimD": self.optimG.state_dict(),
                 "ep": self.ep,
             },
             "/Parm_weig.tar",
