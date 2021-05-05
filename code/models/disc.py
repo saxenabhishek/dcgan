@@ -2,8 +2,7 @@ r"""
 discriminator
 """
 
-import torch.nn as nn
-from torch.nn.modules.activation import Sigmoid
+from torch import nn
 
 
 class Discriminator(nn.Module):
