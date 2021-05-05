@@ -15,11 +15,13 @@ import matplotlib.pyplot as plt
 
 
 class trainer:
+    ep = 0
+
     def __init__(self, lr, dataloader) -> None:
         self.device = "cuda" if torch.cuda.is_available() else "cpu"
         self.vector = 512
-        self.gen = G.Generator(self.vector, 4, 1).to(self.device)
-        self.disc = D.Discriminator(1, 4).to(self.device)
+        self.gen = G.Generator(self.vector, 16, 1).to(self.device)
+        self.disc = D.Discriminator(1, 32).to(self.device)
         self.testnoise = torch.randn((128, self.vector), device=self.device)
 
         self.BCE = BCE()
@@ -29,11 +31,11 @@ class trainer:
 
         beta1 = 0.5
         self.optimD = optim.Adam(self.gen.parameters(), lr=lr, betas=(beta1, 0.999))
-        self.optimG = optim.Adam(self.gen.parameters(), lr=lr, betas=(beta1, 0.999))
+        self.optimG = optim.Adam(self.disc.parameters(), lr=lr, betas=(beta1, 0.999))
 
         self.dataloader = dataloader
 
-    def train(self, ep) -> None:
+    def train(self, ep, printAfter) -> None:
         with torch.autograd.set_detect_anomaly(True):
             for e in range(ep):
                 for i, data in enumerate(tqdm(self.dataloader), 0):
@@ -51,7 +53,7 @@ class trainer:
 
                     self.optimD.step()
 
-                    self.disc.zero_grad()
+                    self.gen.zero_grad()
                     noise = torch.randn((bz, self.vector), device=self.device)
                     fake_sample = self.gen(noise)
                     genfakeD = self.disc(fake_sample)
@@ -60,13 +62,15 @@ class trainer:
 
                     self.optimG.step()
 
-                    if i % 400 == 0:
-                        print(f"  {e}   {lossd.mean().item()}\t{lossg.mean().item()}")
+                    if i % printAfter == 0:
+                        print(f"  {e}   {lossd.mean().item()}\t{lossg.mean().item()} {realD.mean()} {fakeD.mean()}")
                         with torch.no_grad():
                             fake = self.gen(self.testnoise)
-                            print(fake[0])
                             utl.show_tensor_images(torch.cat([fake[:8], sample[:8]]))
                             self.show_plots()
+                ep += 1
+                if e % 2 == 0:
+                    self.save_weights()
 
     def show_plots(self):
         L = self.BCE.loss_points
@@ -74,6 +78,18 @@ class trainer:
             plt.plot(L[i], label=i)
         plt.legend()
         plt.show()
+
+    def save_weights(self):
+        torch.save(
+            {
+                "gen": self.gen.state_dict(),
+                "disc": self.disc.state_dict(),
+                "optimD": self.discopt.state_dict(),
+                "optimD": self.genopt.state_dict(),
+                "ep": self.ep,
+            },
+            "/Parm_weig.tar",
+        )
 
     def weights_init(self, m) -> None:
         classname = m.__class__.__name__
