@@ -33,9 +33,9 @@ class trainer:
 
         self.dataloader = dataloader
 
-    def train(self, e) -> None:
+    def train(self, ep) -> None:
         with torch.autograd.set_detect_anomaly(True):
-            for _ in range(e):
+            for e in range(ep):
                 for i, data in enumerate(tqdm(self.dataloader), 0):
                     bz = data[0].size(0)
                     sample = data[0].to(self.device)
@@ -60,10 +60,11 @@ class trainer:
 
                     self.optimG.step()
 
-                    if i % 4000 == 0:
-                        print(f"   {lossd.mean().item()}\t{lossg.mean().item()}")
+                    if i % 400 == 0:
+                        print(f"  {e}   {lossd.mean().item()}\t{lossg.mean().item()}")
                         with torch.no_grad():
                             fake = self.gen(self.testnoise)
+                            print(fake[0])
                             utl.show_tensor_images(torch.cat([fake[:8], sample[:8]]))
                             self.show_plots()
 
