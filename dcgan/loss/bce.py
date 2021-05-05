@@ -25,7 +25,7 @@ class BCE:
         L_fake = self.criterion(fakeD, fakelab)
         L_fake.backward()
 
-        L = L_real + L_fake
+        L = (L_real + L_fake) / 2
         self.loss_points["d"].append(L.mean().item())
         return L_real + L_fake
 
